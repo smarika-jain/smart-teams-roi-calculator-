@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMART Teams ROI Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body style="background:#f5f8fa; padding:16px;">
+<div class="stroi">
+  <div class="head">
+    <h1>What does hiring really cost you?</h1>
+    <img src="assets/images/smart-teams-logo.png" alt="SMART Teams logo">
+  </div>
+  <p class="sub">Slide the number of hires you expect this year and compare three ways to get them done. Every figure updates as you move.</p>
+
+  <div class="controls">
+    <div class="ctl">
+      <label for="stroi-hires">Hires per year</label>
+      <input type="range" id="stroi-hires" min="1" max="30" step="1" value="12">
+      <output id="stroi-hires-out">12</output>
+    </div>
+    <div class="ctl">
+      <label for="stroi-hrs">Hiring manager hours per hire</label>
+      <input type="range" id="stroi-hrs" min="5" max="60" step="1" value="20">
+      <output id="stroi-hrs-out">20</output>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h2>Internal talent team</h2>
+      <div class="big" id="stroi-int">$102,000</div>
+      <div class="per">per year, fixed &middot; <span id="stroi-int-per">$8,500</span> per hire</div>
+      <div class="rows">
+        <div><span>Salary</span><span>$80,000</span></div>
+        <div><span>Benefits</span><span>$22,000</span></div>
+        <div><span>What you get</span><span>One recruiter</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>External recruiters</h2>
+      <div class="big" id="stroi-ext">$134,400</div>
+      <div class="per">per year, scales with hiring &middot; <span id="stroi-ext-per">$11,200</span> per hire</div>
+      <div class="rows">
+        <div><span>Roles filled by recruiter (70%)</span><span id="stroi-ext-roles">8.4</span></div>
+        <div><span>Average placement fee</span><span>$16,000</span></div>
+        <div><span>What you get</span><span>Placements only</span></div>
+      </div>
+    </div>
+
+    <div class="card smart">
+      <span class="flag">Full team included</span>
+      <h2>SMART Teams</h2>
+      <div class="big" id="stroi-st">$72,000</div>
+      <div class="per">$6,000 per month &middot; <span id="stroi-st-per">$6,000</span> per hire</div>
+      <div class="rows">
+        <div><span>Flexible growth</span><span class="yes">&#10003;</span></div>
+        <div><span>Strategy, marketing, training</span><span class="yes">&#10003;</span></div>
+        <div><span>What you get</span><span class="yes">Whole talent function</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="value">
+    <h2>What the $6,000 a month actually buys</h2>
+    <div class="vgrid">
+      <div class="vitem"><b>Talent strategy and planning</b><span>A talent plan built around your stage, capital, and growth before urgency drives mistakes.</span></div>
+      <div class="vitem"><b>Hiring infrastructure</b><span>Systems, processes, and documentation that make growth repeatable.</span></div>
+      <div class="vitem"><b>Talent marketing</b><span>Multi-channel role promotion so candidates come to you.</span></div>
+      <div class="vitem"><b>Dedicated recruiting team</b><span>Recruiter and account director with end-to-end coordination of the hiring process.</span></div>
+      <div class="vitem"><b>Executive visibility</b><span>Real-time dashboards so leadership always knows where hiring stands.</span></div>
+      <div class="vitem"><b>Hiring for attitude and hiring manager training</b><span>We screen for attitude and aptitude, and coach your hiring managers to interview and select with confidence.</span></div>
+    </div>
+  </div>
+
+  <div class="hidden-cost">
+    Hidden cost of doing it yourself: <b id="stroi-mgr">$26,400</b> a year in hiring manager time spent sourcing, screening, and coordinating (<b id="stroi-mgr-hrs">240</b> hours at $110 an hour). That is before you count the opportunity cost of what those managers were not doing instead.
+  </div>
+
+  <div class="totals">
+    <div class="total">
+      <div class="lbl">Savings vs internal team</div>
+      <div class="num" id="stroi-save-int">$56,400</div>
+    </div>
+    <div class="total">
+      <div class="lbl">Savings vs recruiters</div>
+      <div class="num" id="stroi-save-ext">$88,800</div>
+    </div>
+    <div class="total">
+      <div class="lbl">Manager hours recovered</div>
+      <div class="num neutral" id="stroi-hrs-back">240</div>
+    </div>
+  </div>
+
+  <p class="foot">Assumptions: internal team of one talent professional at $80,000 salary plus $22,000 benefits. External recruiter model assumes 70% of open roles are filled through agencies at an average $16,000 placement fee. SMART Teams embedded partnership at $6,000 per month. Savings figures include recovered hiring manager time at $110 per hour. Your numbers will vary; this tool is for illustration.</p>
+</div>
+
+<script>
+(function () {
+  var fmt = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
+  var hires = document.getElementById('stroi-hires');
+  var hrs = document.getElementById('stroi-hrs');
+
+  function paintTrack(el) {
+    var pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+    el.style.setProperty('--fill', pct + '%');
+  }
+
+  function calc() {
+    var h = +hires.value;
+    var hph = +hrs.value;
+    paintTrack(hires);
+    paintTrack(hrs);
+
+    document.getElementById('stroi-hires-out').textContent = h;
+    document.getElementById('stroi-hrs-out').textContent = hph;
+
+    var internal = 102000;
+    var extRoles = h * 0.7;
+    var external = extRoles * 16000;
+    var smart = 72000;
+    var mgrHours = h * hph;
+    var mgrCost = mgrHours * 110;
+
+    document.getElementById('stroi-int').textContent = fmt(internal);
+    document.getElementById('stroi-int-per').textContent = fmt(internal / h);
+    document.getElementById('stroi-ext').textContent = fmt(external);
+    document.getElementById('stroi-ext-per').textContent = fmt(external / h);
+    document.getElementById('stroi-ext-roles').textContent = (extRoles % 1 === 0) ? extRoles : extRoles.toFixed(1);
+    document.getElementById('stroi-st').textContent = fmt(smart);
+    document.getElementById('stroi-st-per').textContent = fmt(smart / h);
+
+    document.getElementById('stroi-mgr').textContent = fmt(mgrCost);
+    document.getElementById('stroi-mgr-hrs').textContent = mgrHours.toLocaleString('en-US');
+    document.getElementById('stroi-hrs-back').textContent = mgrHours.toLocaleString('en-US');
+
+    var sInt = internal + mgrCost - smart;
+    var sExt = external + mgrCost - smart;
+    var elInt = document.getElementById('stroi-save-int');
+    var elExt = document.getElementById('stroi-save-ext');
+
+    elInt.textContent = fmt(Math.abs(sInt)) + (sInt < 0 ? ' more' : '');
+    elInt.classList.toggle('negative', sInt < 0);
+    elExt.textContent = fmt(Math.abs(sExt)) + (sExt < 0 ? ' more' : '');
+    elExt.classList.toggle('negative', sExt < 0);
+  }
+
+  hires.addEventListener('input', calc);
+  hrs.addEventListener('input', calc);
+  calc();
+})();
+</script>
+</body>
+</html>
