@@ -1373,7 +1373,7 @@ p{max-width:68ch}
 .stroi .total .num.negative { color: var(--orange); }
 .stroi .total .num.neutral { color: var(--navy); }
 
-.stroi .foot { font-size: 11.5px; color: var(--muted); margin-top: 20px; line-height: 1.6; }
+.stroi .foot { font-size: 11.5px; color: var(--muted); margin-top: 20px; line-height: 1.6; max-width: none; }
 
 @media (max-width: 760px) {
   .stroi { padding: 24px 16px 32px; }
